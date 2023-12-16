@@ -1,0 +1,76 @@
+---
+import { CardList } from '@components/CardList';
+import { FootballLeagueStandings } from '@components/FootballLeagueStandings';
+import AppLayout from '@layouts/AppLayout.astro';
+import Layout from '@layouts/Layout.astro';
+import { 
+  getFootLeagueStandings, 
+  getFootballFixturesByLeague,
+} from '@lib/data/football';
+
+/* Get league id */
+const leagueId = Astro.params.league;
+
+const leagueStandings  = await getFootLeagueStandings(Astro.url.origin, leagueId);
+const leagueFixtures = await getFootballFixturesByLeague(Astro.url.origin, leagueId);
+
+if (!leagueStandings ){
+  return Astro.redirect("/");
+}
+
+---
+
+<Layout title={"Bettools - "+leagueStandings.name } description="">
+	<AppLayout>
+    <div class="shadow-md rounded-md space-y-2 ">
+      <div class="rounded-t-lg px-3  flex justify-between gap-1 items-center bg-gradient-to-bl from-zinc-200 dark:from-zinc-700 to-transparent">
+
+        <div class="items-center my-1">
+          <div class="flex items-center gap-2 font-bold text-zinc-400 ">
+            <img src={leagueStandings.flag } class="w-8 h-8"/>
+            {leagueStandings.country}
+          </div>
+          <h1 class="text-2xl max-sm:text-xl font-bold ">{leagueStandings.name+" "+leagueStandings.season}</h1>
+  
+        </div>
+        <div class="my-4 w-16 h-16 ">
+          <img src={leagueStandings.logo } class="object-contain w-16 h-16 rounded-xl bg-white"/>
+        </div>
+        
+      </div>
+      <div class="  p-4 max-sm:p-1.5 ">
+        <h2 class="text-lg font-bold mb-4">Próximos Jogos</h2>
+        <CardList matches={leagueFixtures} type="football" />
+      </div>
+
+      <!-- Destaques -->
+      <div class=" p-4 max-sm:p-2">
+        <h2 class="text-lg font-bold mb-4">Classificação</h2>
+        <FootballLeagueStandings league={leagueStandings} />
+      </div>
+
+      <!-- Destaques -->
+      <div class=" p-4 max-sm:p-2">
+          <h2 class="text-lg font-bold mb-4">Destaques</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              <!-- Destaque 1 -->
+              <div class="bg-zinc-200/40 p-4 rounded-lg">
+                  <h3 class="text-xl font-semibold mb-2">Melhor Jogador</h3>
+                  <p>Jogador A teve uma performance excepcional no último jogo.</p>
+              </div>
+              <!-- Destaque 2 -->
+              <div class="bg-zinc-200/40 p-4 rounded-lg">
+                  <h3 class="text-xl font-semibold mb-2">Melhor Gol</h3>
+                  <p>O gol incrível marcado por Time B foi o destaque da rodada.</p>
+              </div>
+              <!-- Destaque 3 -->
+              <div class="bg-zinc-200/40 p-4 rounded-lg">
+                  <h3 class="text-xl font-semibold mb-2">Momento Especial</h3>
+                  <p>O momento especial do jogo entre Time C e Time D foi...</p>
+              </div>
+          </div>
+      </div>
+
+    </div>
+  </AppLayout>
+</Layout>

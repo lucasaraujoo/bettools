@@ -1,0 +1,82 @@
+---
+import AppLayout from '@layouts/AppLayout.astro';
+import Layout from '@layouts/Layout.astro';
+import { 
+  getFootballFixture, 
+  getFootLeagueStandings,
+} from '@lib/data/football';
+import { formatDateFromString } from "@lib/utils";
+
+import { FootballH2HAnalyses } from '@components/FootballH2HAnalyses';
+import { FootballLeagueStandings } from '@components/FootballLeagueStandings';
+
+
+/* Get league id */
+const fixtureId = Astro.params.id;
+
+if (!fixtureId) {
+  return Astro.redirect("/");
+}
+
+const fixture = await getFootballFixture(Astro.url.origin, fixtureId);
+
+if (!fixture) {
+  return Astro.redirect("/404");
+}
+
+const leagueStandings  = await getFootLeagueStandings(Astro.url.origin, fixture.idLeague);
+
+// console.log(fixture.lastMatches)
+---
+
+<Layout title={"Bettools - "+fixture.Home.name+" x "+fixture.Away.name} description="">
+	<AppLayout>
+		
+    <div >
+      <div class="card   ">
+        <div class="card-body p-2  ">
+          <h2 class="card-title text-sm text-gray-500">{leagueStandings.country+" "+leagueStandings.name}</h2>
+          <div class="grid grid-cols-3 gap-4 mt-2 ">
+            <div class="flex flex-col items-center">
+              <img src={fixture.Home.logo} alt="Corinthians" class="w-24 h-24 ">
+              <h3 class="text-lg font-bold mt-2 text-center">{fixture.Home.name}</h3>
+            </div>
+            <div class="flex flex-col items-center justify-center">
+              <div class="text-4xl font-bold">0 - 0</div>
+              <div class="text-sm text-center">{formatDateFromString(fixture.date)}</div>
+            </div>
+            <div class="flex flex-col items-center">
+              <img src={fixture.Away.logo} alt="Atlético Mineiro" class="w-24 h-24 ">
+              <h3 class="text-lg font-bold mt-2 text-center">{fixture.Away.name}</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tabs tabs-lifted">
+        <input type="radio" name="my_tabs_2" class="tab" aria-label="Odds" />
+        <div class="tab-content bg-base-100 border-base-200 rounded-box ">
+          Em Breve
+        </div>
+      
+        <input type="radio" name="my_tabs_2" class="tab" aria-label="H2H" checked />
+        <div class="tab-content bg-base-100 border-base-200 rounded-box ">
+         
+          <FootballH2HAnalyses fixture={fixture} client:load/>
+        </div>
+      
+        <input type="radio" name="my_tabs_2" class="tab" aria-label="Classificação"  />
+        <div class="tab-content bg-base-100 border-base-200 rounded-box ">
+          <FootballLeagueStandings 
+            league={leagueStandings} 
+            home={fixture.Home.name} 
+            away={fixture.Away.name} 
+          />
+          
+        </div>
+        
+      </div>
+      
+    </div>
+	</AppLayout>
+	
+</Layout>

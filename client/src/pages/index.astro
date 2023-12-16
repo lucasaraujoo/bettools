@@ -1,0 +1,32 @@
+---
+import AppLayout from '../layouts/AppLayout.astro';
+import Layout from '../layouts/Layout.astro';
+import { CardList } from '@components/CardList';
+import {getFootballFixtures} from '@lib/data/football'
+
+const searchParams = Astro.url.searchParams;
+const date = searchParams.get('date');
+
+if(date && date < (new Date()).toLocaleDateString("pt-BR").split("/").reverse().join("-")){
+	return Astro.redirect("/");
+}
+
+const search = searchParams.get('search') ;
+if (search === "" || (search && search.length < 3 )){
+	
+	return Astro.redirect("/");
+	
+}
+
+const footballFixtures = await getFootballFixtures(Astro.url.origin, date, search);
+
+---
+
+<Layout title="Bettools" description="">
+	<AppLayout>
+		<CardList matches={footballFixtures} type="football" />
+	</AppLayout>
+</Layout> 
+
+
+

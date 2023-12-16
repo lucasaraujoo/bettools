@@ -1,0 +1,40 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+}
+
+
+const { title, description } = Astro.props;
+const canonicalURL = new URL(Astro.url).href;
+
+---
+
+<!doctype html>
+<html lang="pt-BR" class="w-full h-full" data-theme="light">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="title" content={title} />
+		<meta name="description" content="Astro description" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<link rel="canonical" href={canonicalURL} />
+		<meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <!-- <meta property="og:image" content={ogImageURL} /> -->
+    <!-- <meta property="og:image:alt" content={ogImage.alt} /> -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={canonicalURL} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    <!-- <meta property="twitter:image" content={ogImageURL} /> -->
+		<meta name="robots" content="follow, index" />
+		<title>{title}</title>
+	</head>
+	<body class=" w-full h-full flex flex-col ">
+		<slot />
+	</body>
+</html>
